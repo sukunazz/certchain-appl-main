@@ -23,6 +23,13 @@ interface CertificateData {
   }
 }
 
+const buildLogoUrl = (logo?: string) => {
+  if (!logo) return null
+  if (logo.startsWith("http://") || logo.startsWith("https://")) return logo
+  const assetsUrl = process.env.NEXT_PUBLIC_ASSETS_URL
+  return assetsUrl ? `${assetsUrl}/${logo}` : null
+}
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -39,6 +46,8 @@ export async function GET(
       return new NextResponse("Certificate not found", { status: 404 })
     }
 
+    const logoUrl = buildLogoUrl(certificate.event?.organizer?.logo)
+
     return new ImageResponse(
       (
         <div
@@ -50,7 +59,6 @@ export async function GET(
             backgroundColor: "white",
           }}
         >
-          {/* Header */}
           <div
             style={{
               display: "flex",
@@ -71,9 +79,9 @@ export async function GET(
                 chain
               </span>
             </div>
-            {certificate.event?.organizer?.logo && (
+            {logoUrl && (
               <img
-                src={`${process.env.NEXT_PUBLIC_ASSETS_URL}/${certificate.event.organizer.logo}`}
+                src={logoUrl}
                 alt={certificate.event.organizer.name}
                 width={40}
                 height={40}
@@ -82,7 +90,6 @@ export async function GET(
             )}
           </div>
 
-          {/* Purple Banner */}
           <div
             style={{
               backgroundColor: "#4F46E5",
@@ -105,7 +112,6 @@ export async function GET(
             </h1>
           </div>
 
-          {/* Content */}
           <div
             style={{
               flex: 1,
@@ -189,7 +195,6 @@ export async function GET(
             </div>
           </div>
 
-          {/* Footer */}
           <div
             style={{
               borderTop: "1px solid #E5E7EB",
@@ -217,7 +222,6 @@ export async function GET(
             </div>
           </div>
 
-          {/* Verification */}
           <div
             style={{
               backgroundColor: "#F9FAFB",
